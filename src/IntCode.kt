@@ -1,5 +1,4 @@
-class IntCode(private val input: String) {
-    var list = input.split(",").map { it.toInt() }.toMutableList()
+class IntCode(private val list: MutableList<Int>) {
     fun process(): String {
         loop@ for(index in 0..list.size step 4){
             when(list[index]){
@@ -12,8 +11,35 @@ class IntCode(private val input: String) {
     }
 
 }
+fun updatedData(vararg pairs: Pair<Int, Int>): (String) -> MutableList<Int> {
+    return fun(input: String): MutableList<Int> {
+        val list = input.split(",").map { it.toInt() }.toMutableList()
+        pairs.forEach {
+            list[it.first] = it.second
+        }
+        return list
+    }
+}
+
 
 fun main() {
+    val _1202 = updatedData(1 to 12, 2 to 2)
     val input = IntCode::class.java.getResource("day2input.txt").readText()
-    print(IntCode(input).process())
+    val initialList = updatedData()(input)
+
+    iloop@ for(i in 1..initialList.size){
+        for(j in 1..initialList.size){
+            try {
+                val updatedData = updatedData(1 to i, 2 to j)
+                val output = IntCode(updatedData(input)).process()
+                val ans = output.split(",")[0]
+                if(ans.toInt() == 19690720) {
+                    print(i * 100 + j)
+                    break@iloop
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+
 }
